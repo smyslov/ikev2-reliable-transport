@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rfc category="std" submissionType="IETF" ipr="trust200902" docName="draft-smyslov-ipsecme-ikev2-reliable-transport-03">
+
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="no"?>
+<?rfc iprnotified="no" ?>
+<?rfc strict="yes" ?>
+
+    <front>
+        <title abbrev="Reliable Transport in IKEv2">Use of Reliable Transport in the Internet Key Exchange Protocol Version 2 (IKEv2)</title>
+        <author initials='V.' surname="Smyslov" fullname='Valery Smyslov'>
+            <organization>ELVIS-PLUS</organization>
+            <address>
+                <postal>
+                    <street>PO Box 81</street>
+                    <city>Moscow (Zelenograd)</city>
+                    <code>124460</code>
+                    <country>RU</country>
+                </postal>
+                <phone>+7 495 276 0211</phone>
+                <email>svan@elvis.ru</email>
+            </address>
+        </author>
+        <date/>
+
+        <abstract>
+          <t>The Internet Key Exchange protocol version 2 (IKE2) can operate either over unreliable (UDP) transport
+          or over reliable (TCP) transport. If TCP is used, then IPsec tunnels created by IKEv2 also use TCP.
+          This document specifies how to decouple IKEv2 and IPsec transports, so that IKEv2 can operate
+          over TCP, while IPsec tunnels use unreliable transport. This feature allows IKEv2 to effectively
+          exchange large blobs of data (e.g. when post-quantum algorithms are employed) while avoiding 
+          performance problems which arise when TCP is used for IPsec.
+          </t>
+        </abstract>
+    </front>
+
+    <middle>
+        <section anchor="intro" title="Introduction">
+          <t>The Internet Key Exchange protocol version 2 (IKEv2) <xref target="RFC7296" />
+          originally used unreliable transport (UDP) for its messages. 
+          Later it was extended to use TCP <xref target="RFC9329" /> where UDP is blocked.
+          UDP is still considered as a preferred transport for IKEv2, and TCP is only used if 
+          UDP datagrams cannot get through.
+          </t>
+
+          <t>Originally IKEv2 peers exchanged relatively small amount of data, so that simple retransmission
+          mechanism on top of UDP with no congestion control sufficed. The situation 
+          has changed when post-quantum cryptographic algorithms started to be incorporated
+          into IKEv2 <xref target="RFC9370" />. Most of post-quantum algorithms require IKE peers 
+          to exchange much more data, than classical algorithms, up to tens (or even hundreds) Kbytes.
+          Few proposals exist that allow to overcome the 64 Kbytes limitation on the size of an IKE payload 
+          (<xref target="I-D.nir-ipsecme-big-payload" />, <xref target="I-D.smyslov-ipsecme-ikev2-extended-pld" />, 
+          <xref target="I-D.tjhai-ikev2-beyond-64k-limit" />).
+          </t>
+
+          <t>When IKE messages grow up to tens (or even hundreds) Kbytes, using UDP as a transport will become challenging.
+          Use of IKE fragmentation <xref target="RFC7383" /> avoids IP fragmentation problems
+          and also allows each IKE message fragment to fit into UDP datagram, even if the original message doesn't.
+          However, all IKE fragments are always being sent (and retransmitted) at once, so that with the increased number of fragments 
+          and the lack of congestion control the simple retransmission mechanism of IKEv2 will perform poorly,
+          perhaps even making more truble to the network.
+          </t>
+
+          <t>Using reliable transport (like TCP) for IKEv2 would be a solution to the problem.
+          However, the current use of TCP as defined in <xref target="RFC9329" /> implies that 
+          ESP SAs are also encapsulated in TCP, which has negative impact on IPsec performance (see Section 9 of <xref target="RFC9329" />.
+          </t>
+
+          <t>This specification allows to decouple IKE and IPsec transports, so that it makes possible to negotiate and use reliable 
+          transport for IKEv2 while maintaining using unreliable transport for IPsec.
+          </t>
+
+          <t>The idea to decouple IKE and IPsec transports was originally presented in <xref target="I-D.tjhai-ikev2-beyond-64k-limit" />.
+          </t>
+        </section>
+
+        <section anchor="mustshouldmay" title="Terminology and Notation">
+            <t> The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", 
+            "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted 
+            as described in BCP 14 <xref target="RFC2119" /> <xref target="RFC8174" /> when, and only when, 
+            they appear in all capitals, as shown here.
+            </t>
+        </section>
+
+        <section anchor="protocol" title="Protocol Details">
+          <t>If the initiator supports this extension and is configured to use and it and also anticipates
+          that large amount of data may be exchanged in this SA (e.g. it proposes Key Exchange transforms with large public keys), 
+          then the initiator starts the IKE_SA_INIT exchange using UDP port 4500 and includes 
+          a new status type notification RELIABLE_IKE_TRANSPORT (&lt;TBA by IANA&gt;) into the request message.
+          The RELIABLE_IKE_TRANSPORT notification has protocol 0, SPI size 0 and contains no data.
+          Using UDP port 4500 for the IKE_SA_INIT messages is explicitly allowed by <xref target="RFC7296" />,
+          and ensures that IPsec packets can get through if they are UDP encapsulated.
+          </t>
+
+          <t>If the responder supports this extension and is configured to use it and the IKE_SA_INIT request 
+          contains the RELIABLE_IKE_TRANSPORT notification, then the responder sends back this notification in the response.
+          </t>
+
+          <figure><artwork align="center" ><![CDATA[
+Initiator (UDP:4500)               Responder (UDP:4500)
+-------------------------------------------------------------------
+HDR , SAi1, KEi1, Ni,
+[N(NAT_DETECTION_SOURCE_IP),
+N(NAT_DETECTION_DESTINATION_IP),]
+N(RELIABLE_IKE_TRANSPORT)  --->
+                                   HDR, SAr1, KEr1, Nr,
+                                   [N(NAT_DETECTION_SOURCE_IP),
+                                   N(NAT_DETECTION_DESTINATION_IP),]
+                             <---  N(RELIABLE_IKE_TRANSPORT)
+      ]]></artwork></figure>
+
+          <t>In this case the initiator MUST switch to TCP using destination port 4500 in the next exchange (IKE_INTERMEDIATE or
+          IKE_AUTH) and the responder MUST be prepared to receive the next exchange request message on TCP port 4500. 
+          </t>
+
+          <figure><artwork align="center" ><![CDATA[
+Initiator (TCP)                    Responder (TCP:4500)
+-------------------------------------------------------------------
+HDR, SK{...}  --->
+                             <---  HDR, SK{...}
+      ]]></artwork></figure>
+
+          <t>All subsequent IKE exchanges MUST continue to use TCP transport. In particular, peers MUST NOT
+          try to swich IKE transport to UDP as defined in Sections 7.1 and 7.3 of <xref target="RFC9329" />.
+          All recommendations of <xref target="RFC9329" /> regarding maintaning TCP connection apply accordingly.
+          </t>
+
+          <t>With this IKE extension child SAs are created as defined in <xref target="RFC7296" /> -
+          they either use direct transport over IP or are UDP encapsulated if NAT is detected. 
+          Note, that in the latter case  peers are responsible for maintaining NAT mapping 
+          by sending NAT keepalives (see Section 2.23 of <xref target="RFC7296" />).
+          </t>
+        </section>
+
+        <section anchor="security" title="Security Considerations">
+          <t>Section 10 of <xref target="RFC9329" /> discusses security implications of using TCP as IKE transport.
+          </t>
+        </section>
+
+      <section anchor="iana" title="IANA Considerations">
+        <t> This document defines a new Notify Message Type in the "IKEv2 Notify Message Status Types" registry:
+        </t>
+  
+        <figure align="center">
+            <artwork align="left"><![CDATA[
+<TBA>         RELIABLE_IKE_TRANSPORT
+            ]]></artwork>
+        </figure>
+      </section>
+
+    </middle>
+
+    <back>
+        <references title='Normative References'>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7296.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9329.xml" ?>
+        </references>
+
+        <references title='Informative References'>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7383.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9370.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.nir-ipsecme-big-payload.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.tjhai-ikev2-beyond-64k-limit.xml" ?>
+          <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.smyslov-ipsecme-ikev2-extended-pld.xml" ?>
+        </references>
+    </back>
+</rfc>
+
+
