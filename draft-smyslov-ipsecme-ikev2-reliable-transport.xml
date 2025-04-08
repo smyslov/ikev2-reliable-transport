@@ -15,8 +15,7 @@
   <?rfc strict="yes" ?>
 
   <front>
-    <title abbrev="Reliable Transport in IKEv2">Use of Reliable Transport in
-    the Internet Key Exchange Protocol Version 2 (IKEv2)</title>
+    <title abbrev="IPsec Mixed Transport in IKEv2">Use of Mixed Transport in IPsec</title>
 
     <author fullname="Valery Smyslov" initials="V." surname="Smyslov">
       <organization>ELVIS-PLUS</organization>
@@ -141,13 +140,13 @@
       only when, they appear in all capitals, as shown here.</t>
     </section>
 
-    <section anchor="protocol" title="Protocol Details">
+    <section anchor="protocol" title="Use of Reliable Transport for IKEv2 SA">
       <t>If the initiator supports this extension and is configured to use it
       and also anticipates that large amount of data may be exchanged in this
       SA (e.g. it proposes Key Exchange transforms with large public keys),
       then the initiator starts the IKE_SA_INIT exchange using UDP port 4500
       and includes a new status type notification RELIABLE_IKE_TRANSPORT
-      (&lt;TBA by IANA&gt;) into the request message. The
+      (&lt;TBA1 by IANA&gt;) into the request message. The
       RELIABLE_IKE_TRANSPORT notification has protocol 0, SPI size 0 and
       contains no data. Using UDP port 4500 for the IKE_SA_INIT messages is
       explicitly allowed by <xref target="RFC7296"></xref>, and ensures that
@@ -200,7 +199,7 @@ HDR, SK{...}  --->
       keepalives (see Section 2.23 of <xref target="RFC7296"></xref>).</t>
     </section>
 
-    <section anchor="protocol2" title="Revised Protocol Details">
+    <section anchor="protocol2" title="Use of Unreliable Transport for Child SAs">
       <t><xref target="RFC9329"></xref> defines an alternative transport
       method for IKEv2 and IPsec traffic by allowing them to be transported
       over a single TCP connection. This modification allows IKEv2 to signal
@@ -210,15 +209,15 @@ HDR, SK{...}  --->
       initiator may include a new notification type, ESP_OVER_UDP, in the
       IKE_SA_INIT exchange. </t>
 
-      <t>The ESP_OVER_UDP notification has Protocol ID set to 0, SPI Size set
+      <t>The USE_UNRELIABLE_TRANSPORT notification has Protocol ID set to 0, SPI Size set
       to 0, and contains no additional data. This notification signals to the
       responder that the initiator is willing to use UDP port 4500 for ESP
       traffic if UDP is not blocked by firewalls or NAT devices. If the
       responder also supports and is willing to use UDP for ESP, it will
-      include the ESP_OVER_UDP notification in its response to the IKE_SA_INIT
+      include the USE_UNRELIABLE_TRANSPORT notification in its response to the IKE_SA_INIT
       exchange. With this IKE extension, child SAs are created as defined in
       <xref target="RFC7296"></xref>. If UDP for ESP is signaled and supported
-      by both peers (via the ESP_OVER_UDP notification), the ESP traffic will
+      by both peers (via the USE_UNRELIABLE_TRANSPORT notification), the ESP traffic will
       be encapsulated in UDP port 4500 to traverse NAT or firewalls. However,
       if no NAT is detected between the peers, IPsec data packets are sent
       using ESP directly, without UDP encapsulation. If either peer does not
@@ -233,11 +232,11 @@ Initiator (UDP:4500)               Responder (UDP:4500)
 HDR , SAi1, KEi1, Ni,
 [N(NAT_DETECTION_SOURCE_IP),
 N(NAT_DETECTION_DESTINATION_IP),]
-N(ESP_OVER_UDP)  --->
+N(USE_UNRELIABLE_TRANSPORT)  --->
                                    HDR, SAr1, KEr1, Nr,
                                    [N(NAT_DETECTION_SOURCE_IP),
                                    N(NAT_DETECTION_DESTINATION_IP),]
-                             <---  N(ESP_OVER_UDP)
+                             <---  N(USE_UNRELIABLE_TRANSPORT)
       ]]></artwork>
       </figure>
     </section>
@@ -253,8 +252,8 @@ N(ESP_OVER_UDP)  --->
 
       <figure align="center">
         <artwork align="left"><![CDATA[
-<TBA>         RELIABLE_IKE_TRANSPORT
-<TBA2>        ESP_OVER_UDP]]></artwork>
+<TBA1>        RELIABLE_IKE_TRANSPORT
+<TBA2>        USE_UNRELIABLE_TRANSPORT]]></artwork>
       </figure>
     </section>
   </middle>
