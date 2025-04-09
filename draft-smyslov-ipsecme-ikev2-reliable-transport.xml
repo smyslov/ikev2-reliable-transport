@@ -15,7 +15,8 @@
   <?rfc strict="yes" ?>
 
   <front>
-    <title abbrev="IPsec Mixed Transport in IKEv2">Use of Mixed Transport in IPsec</title>
+    <title abbrev="IPsec Mixed Transport in IKEv2">Use of Mixed Transport in
+    IPsec</title>
 
     <author fullname="Valery Smyslov" initials="V." surname="Smyslov">
       <organization>ELVIS-PLUS</organization>
@@ -199,7 +200,8 @@ HDR, SK{...}  --->
       keepalives (see Section 2.23 of <xref target="RFC7296"></xref>).</t>
     </section>
 
-    <section anchor="protocol2" title="Use of Unreliable Transport for Child SAs">
+    <section anchor="protocol2"
+             title="Use of Unreliable Transport for Child SAs">
       <t><xref target="RFC9329"></xref> defines an alternative transport
       method for IKEv2 and IPsec traffic by allowing them to be transported
       over a single TCP connection. This modification allows IKEv2 to signal
@@ -207,23 +209,23 @@ HDR, SK{...}  --->
       IKE_SA_INIT exchange using TCP and continues to use TCP for all IKEv2
       messages. To signal the ability to use UDP for ESP traffic, the
       initiator may include a new notification type, ESP_OVER_UDP, in the
-      IKE_SA_INIT exchange. </t>
+      IKE_SA_INIT exchange.</t>
 
-      <t>The USE_UNRELIABLE_TRANSPORT notification has Protocol ID set to 0, SPI Size set
-      to 0, and contains no additional data. This notification signals to the
-      responder that the initiator is willing to use UDP port 4500 for ESP
-      traffic if UDP is not blocked by firewalls or NAT devices. If the
-      responder also supports and is willing to use UDP for ESP, it will
-      include the USE_UNRELIABLE_TRANSPORT notification in its response to the IKE_SA_INIT
-      exchange. With this IKE extension, child SAs are created as defined in
-      <xref target="RFC7296"></xref>. If UDP for ESP is signaled and supported
-      by both peers (via the USE_UNRELIABLE_TRANSPORT notification), the ESP traffic will
-      be encapsulated in UDP port 4500 to traverse NAT or firewalls. However,
-      if no NAT is detected between the peers, IPsec data packets are sent
-      using ESP directly, without UDP encapsulation. If either peer does not
-      support UDP for ESP or if UDP is blocked, the ESP traffic will be
-      transported using the existing transport method, such as over the same
-      TCP connection as IKEv2.</t>
+      <t>The USE_UNRELIABLE_TRANSPORT notification has Protocol ID set to 0,
+      SPI Size set to 0, and contains no additional data. This notification
+      signals to the responder that the initiator is willing to use UDP port
+      4500 for ESP traffic if UDP is not blocked by firewalls or NAT devices.
+      If the responder also supports and is willing to use UDP for ESP, it
+      will include the USE_UNRELIABLE_TRANSPORT notification in its response
+      to the IKE_SA_INIT exchange. With this IKE extension, child SAs are
+      created as defined in <xref target="RFC7296"></xref>. If UDP for ESP is
+      signaled and supported by both peers (via the USE_UNRELIABLE_TRANSPORT
+      notification), the ESP traffic will be encapsulated in UDP port 4500 to
+      traverse NAT or firewalls. However, if no NAT is detected between the
+      peers, IPsec data packets are sent using ESP directly, without UDP
+      encapsulation. If either peer does not support UDP for ESP or if UDP is
+      blocked, the ESP traffic will be transported using the existing
+      transport method, such as over the same TCP connection as IKEv2.</t>
 
       <figure>
         <artwork align="center"><![CDATA[
@@ -239,6 +241,69 @@ N(USE_UNRELIABLE_TRANSPORT)  --->
                              <---  N(USE_UNRELIABLE_TRANSPORT)
       ]]></artwork>
       </figure>
+
+      <section title="Behavior in CREATE_CHILD_SA Exchanges">
+        <t>When a peer desires to use UDP transport for ESP traffic in a new
+        Child SA, it MUST include the USE_UNRELIABLE_TRANSPORT notification in
+        the CREATE_CHILD_SA request. This is necessary even if this
+        notification was exchanged earlier in the IKE_SA_INIT or a previous
+        CREATE_CHILD_SA, as support for unreliable transport is negotiated on
+        a per-SA basis. If both peers include the USE_UNRELIABLE_TRANSPORT
+        notification during the exchange, the resulting Child SA's ESP traffic
+        will be encapsulated over UDP port 4500 (or direct IP, if no NAT is
+        detected). If the notification is not sent or not echoed, the Child SA
+        inherits the IKE SAs TCP for ESP, as specified in <xref
+        target="RFC9329"></xref>.</t>
+      </section>
+    </section>
+
+    <section anchor="dual" title="Dual Mechanisms">
+      <t>The mechanisms defined in this specification RELIABLE_IKE_TRANSPORT
+      and USE_UNRELIABLE_TRANSPORT, serve complementary but distinct purposes.
+      They are both required to support the use of IKEv2 in deployments
+      involving post-quantum cryptography and constrained network
+      conditions.</t>
+
+      <t>The RELIABLE_IKE_TRANSPORT notification enables the IKEv2 protocol to
+      operate over a reliable transport (TCP), addressing challenges
+      introduced by post-quantum key exchange algorithms that involve the
+      exchange of large payloads, often exceeding typical MTU sizes. Operating
+      IKEv2 over TCP ensures reliable and congestion-aware delivery of these
+      large messages, mitigating the limitations of UDP-based fragmentation
+      and retransmission mechanisms.</t>
+
+      <t>However, as specified in <xref target="RFC9329"></xref>, when IKEv2
+      is transported over TCP, the resulting IPsec Child SAs are also required
+      to use TCP as a transport. This presents performance drawbacks for ESP
+      traffic, such as head-of-line blocking and TCP-in-TCP inefficiencies. To
+      address these concerns, this specification introduces the
+      USE_UNRELIABLE_TRANSPORT notification, which allows IKE peers to
+      negotiate the use of UDP transport for ESP, even when IKE itself is
+      carried over TCP.</t>
+
+      <t>By separating these mechanisms, implementations gain the flexibility
+      to:</t>
+
+      <t><list style="symbols">
+          <t>Use reliable transport (TCP) for IKEv2 message exchanges where
+          large payloads demand it, while retaining efficient UDP
+          encapsulation for ESP traffic.</t>
+        </list></t>
+
+      <t>These mechanisms are negotiated independently and can be used
+      together or separately depending on deployment needs.</t>
+    </section>
+
+    <section anchor="notification"
+             title="Handling Irrelevant or Unsupported USE_UNRELIABLE_TRANSPORT Notifications">
+      <t>If a peer receives the USE_UNRELIABLE_TRANSPORT notification in an
+      exchange where it is not applicable, for example, during IKE_SA_INIT
+      when the IKE SA is already running over UDP, the peer MUST ignore the
+      notification. Similarly, if a peer does not support sending ESP over UDP
+      when IKE runs over TCP, it MUST silently ignore the
+      USE_UNRELIABLE_TRANSPORT notification and continue using the default
+      behavior defined in <xref target="RFC9329"></xref>, which is to send ESP
+      over TCP.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
