@@ -15,7 +15,7 @@
   <?rfc strict="yes" ?>
 
   <front>
-    <title abbrev="IPsec Mixed Transport in IKEv2">Use of Mixed Transport in
+    <title abbrev="Mixed Transport in IPsec">Use of Mixed Transport in
     IPsec</title>
 
     <author fullname="Valery Smyslov" initials="V." surname="Smyslov">
