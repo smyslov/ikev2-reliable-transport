@@ -178,7 +178,7 @@ N(SEPARATE_TRANSPORTS)  --->
 
 => Initiator switches to TCP:4500 for IKE_INTERMEDIATE / 
    IKE_AUTH / subsequent IKEv2 exchanges  
-=> ESP over UDP or IP if possible, else over TCP as per RFC9329
+=> ESP over UDP or IP if possible, else over TCP
           ]]></artwork>
           </figure></t>
       </section>
@@ -228,7 +228,7 @@ N(SEPARATE_TRANSPORTS)  --->
 
 
 => All subsequent IKEv2 messages continue over TCP  
-=> ESP over UDP or IP if possible, else over TCP as per RFC9329
+=> ESP over UDP or IP if possible, else over TCP
           ]]></artwork>
           </figure></t>
       </section>
