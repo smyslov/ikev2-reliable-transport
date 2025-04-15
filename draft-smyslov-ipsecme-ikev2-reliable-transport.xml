@@ -103,14 +103,6 @@
       TCP, which has negative impact on IPsec performance (see Section 9 of
       <xref target="RFC9329"></xref>).</t>
 
-      <t>This specification allows to decouple IKE and IPsec transports,
-      making it possible to use a reliable transport for IKEv2 while
-      continuing to use an unreliable transport for IPsec.</t>
-
-      <t>The idea to decouple IKE and IPsec transports was originally
-      presented in <xref
-      target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>.</t>
-
       <t>In some cases, a pure PQC Key Exchange may be required for specific
       deployments, particularly those governed by regulatory or compliance
       mandates that necessitate exclusive use of post-quantum cryptography.
@@ -132,6 +124,14 @@
       TCP. This allows deployments requiring a pure post-quantum key exchange
       to establish keys during the IKE_SA_INIT exchange without concerns about
       exceeding typical network MTUs.</t>
+
+      <t>This specification allows to decouple IKE and IPsec transports,
+      making it possible to use a reliable transport for IKEv2 while
+      continuing to use an unreliable transport for IPsec.</t>
+
+      <t>The idea to decouple IKE and IPsec transports was originally
+      presented in <xref
+      target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>.</t>
     </section>
 
     <section anchor="mustshouldmay" title="Terminology and Notation">
@@ -160,6 +160,27 @@
         initiator MUST switch to TCP port 4500 for subsequent exchanges
         (IKE_INTERMEDIATE or IKE_AUTH). The responder MUST be prepared to
         receive these exchanges over TCP.</t>
+
+        <t><figure>
+            <artwork align="center"><![CDATA[
+Initiator (UDP:4500)               Responder (UDP:4500)
+-------------------------------------------------------------------
+IKE_SA_INIT request:
+HDR , SAi1, KEi1, Ni,
+[N(NAT_DETECTION_SOURCE_IP),
+N(NAT_DETECTION_DESTINATION_IP),]
+N(SEPARATE_TRANSPORTS)  --->
+                                   IKE_SA_INIT response:                                   
+                                   HDR, SAr1, KEr1, Nr,
+                                   [N(NAT_DETECTION_SOURCE_IP),
+                                   N(NAT_DETECTION_DESTINATION_IP),]
+                             <---  N(SEPARATE_TRANSPORTS)
+
+=> Initiator switches to TCP:4500 for IKE_INTERMEDIATE / 
+   IKE_AUTH / subsequent IKEv2 exchanges  
+=> ESP over UDP or IP if possible, else over TCP as per RFC9329
+          ]]></artwork>
+          </figure></t>
       </section>
 
       <section title="Using TCP Transport for IKEv2 from the Start">
@@ -169,13 +190,14 @@
         expected. In this case, the initiator includes the SEPARATE_TRANSPORTS
         notification in the IKE_SA_INIT request to indicate its preference to
         use separate transports; IKEv2 over TCP and ESP over UDP, provided
-        that UDP is not blocked in the network path. </t>
+        that UDP is not blocked in the network path.</t>
 
-        <t>If the responder supports this extension, it responds with the
+        <t>If the responder supports this extension, it includes the
         SEPARATE_TRANSPORTS notification in the IKE_SA_INIT response. In this
-        case, child SAs are created as per <xref target="RFC7296"></xref>,
-        with ESP sent over UDP if possible, or over TCP as described in <xref
-        target="RFC9329"></xref> if UDP is blocked. </t>
+        case, Child SAs are created as specified in <xref
+        target="RFC7296"></xref>, with ESP sent over UDP (or directly over IP)
+        if possible. If both UDP and IP are blocked, ESP is sent over TCP as
+        described in <xref target="RFC9329"></xref>. </t>
 
         <t>If the responder does not support the SEPARATE_TRANSPORTS
         notification (i.e., the notification is not echoed in the response),
@@ -188,6 +210,27 @@
         transport, either after IKE_SA_INIT or if TCP was used from the
         beginning, all subsequent IKEv2 exchanges MUST continue to use
         TCP.</t>
+
+        <t><figure>
+            <artwork align="center"><![CDATA[
+Initiator (TCP:4500)                        Responder (TCP:4500)
+-------------------------------------------------------------------
+IKE_SA_INIT request:
+HDR , SAi1, KEi1, Ni,
+[N(NAT_DETECTION_SOURCE_IP),
+N(NAT_DETECTION_DESTINATION_IP),]
+N(SEPARATE_TRANSPORTS)  --->
+                                   IKE_SA_INIT response:                                   
+                                   HDR, SAr1, KEr1, Nr,
+                                   [N(NAT_DETECTION_SOURCE_IP),
+                                   N(NAT_DETECTION_DESTINATION_IP),]
+                             <---  N(SEPARATE_TRANSPORTS)
+
+
+=> All subsequent IKEv2 messages continue over TCP  
+=> ESP over UDP or IP if possible, else over TCP as per RFC9329
+          ]]></artwork>
+          </figure></t>
       </section>
 
       <section title="Notification Format">
@@ -212,23 +255,6 @@
         issues with ESP traffic, the encrypted ESP ping mechanism defined in
         <xref target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref> MAY be
         used.</t>
-
-        <t><figure>
-            <artwork align="center"><![CDATA[
-Initiator (UDP:4500)               Responder (UDP:4500)
-                        - or - 
-Initiator (TCP)                    Responder (TCP:4500)
--------------------------------------------------------------------
-HDR , SAi1, KEi1, Ni,
-[N(NAT_DETECTION_SOURCE_IP),
-N(NAT_DETECTION_DESTINATION_IP),]
-N(SEPARATE_TRANSPORTS)  --->
-                                   HDR, SAr1, KEr1, Nr,
-                                   [N(NAT_DETECTION_SOURCE_IP),
-                                   N(NAT_DETECTION_DESTINATION_IP),]
-                             <---  N(SEPARATE_TRANSPORTS)
-          ]]></artwork>
-          </figure></t>
       </section>
     </section>
 
