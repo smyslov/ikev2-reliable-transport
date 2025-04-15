@@ -213,7 +213,7 @@ N(SEPARATE_TRANSPORTS)  --->
 
         <t><figure>
             <artwork align="center"><![CDATA[
-Initiator (TCP:4500)                        Responder (TCP:4500)
+Initiator (TCP)                     Responder (TCP:4500)
 -------------------------------------------------------------------
 IKE_SA_INIT request:
 HDR , SAi1, KEi1, Ni,
