@@ -231,7 +231,7 @@ N(SEPARATE_TRANSPORTS)  --->
           <t>In both scenarios described above (<xref target="protocol_udp" /> and <xref target="protocol_tcp" />), once the IKEv2 SA switches to TCP
           transport, either after IKE_SA_INIT or if TCP was used from the
           beginning, all subsequent IKEv2 exchanges <bcp14>MUST</bcp14> continue to use
-          TCP. See also <xref target="mobike" />.</t>
+          TCP. The interaction with MOBIKE is described in <xref target="mobike" />.</t>
       </section>
 
       <section title="Notification Format">
