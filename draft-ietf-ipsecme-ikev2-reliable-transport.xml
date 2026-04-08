@@ -276,10 +276,9 @@ N(SEPARATE_TRANSPORTS)  --->
             after the connection is broken. Since network condition may change while the client is inactive, 
             the use of separate transports <bcp14>MUST NOT</bcp14> be stored in the resumption ticket
             and <bcp14>MUST</bcp14> be re-negotiated during session resumption.
-            Since no large public key are transferred in the IKE_SESSION_RESUME exchange,
-            the initiator while resuming <bcp14>SHOULD</bcp14> start using UDP as defined in <xref target="protocol_udp" />,
-            since this allows more accurate detection of the precence of NATS and UDP connectivity 
-            comparing to starting with TCP (as defined in <xref target="protocol_tcp" />).
+            Since no large public keys are transferred in the IKE_SESSION_RESUME exchange, then,
+            unless configured to use TCP only, the initiator, when resuming, <bcp14>MUST</bcp14> start using UDP with destination port 4500, 
+            as discussed in <xref target="protocol_udp" />. This enables NAT detection for UDP and UDP reachability testing before switching to TCP.
             </t>
         </section>
     </section>
