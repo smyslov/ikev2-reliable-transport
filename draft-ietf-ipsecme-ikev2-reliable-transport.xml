@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="US-ASCII"?>
-<rfc category="std"
-     docName="draft-ietf-ipsecme-ikev2-reliable-transport-00"
+<rfc category="std" docName="draft-ietf-ipsecme-ikev2-reliable-transport-00"
      ipr="trust200902" submissionType="IETF">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
@@ -108,7 +107,7 @@
       mandates that necessitate exclusive use of post-quantum cryptography.
       Examples include high-security environments or sectors governed by
       stringent cryptographic standards. In this case larger amount of data
-      need to be sent in the IKE_SA_INIT exchnage, that makes using UDP
+      need to be sent in the IKE_SA_INIT exchange, that makes using UDP
       problematic. For PQ KEM algorithms, if TCP is used for IKEv2 and peers
       do not require traditional algorithms, then PQ KEM can be used directly
       within the IKE_SA_INIT message when TCP transport is enabled for IKEv2.
@@ -170,7 +169,7 @@ HDR , SAi1, KEi1, Ni,
 [N(NAT_DETECTION_SOURCE_IP),
 N(NAT_DETECTION_DESTINATION_IP),]
 N(SEPARATE_TRANSPORTS)  --->
-                                   IKE_SA_INIT response:                                   
+                                   IKE_SA_INIT response:
                                    HDR, SAr1, KEr1, Nr,
                                    [N(NAT_DETECTION_SOURCE_IP),
                                    N(NAT_DETECTION_DESTINATION_IP),]
@@ -197,7 +196,7 @@ N(SEPARATE_TRANSPORTS)  --->
         case, Child SAs are created as specified in <xref
         target="RFC7296"></xref>, with ESP sent over UDP (or directly over IP)
         if possible. If both UDP and IP are blocked, ESP is sent over TCP as
-        described in <xref target="RFC9329"></xref>. </t>
+        described in <xref target="RFC9329"></xref>.</t>
 
         <t>If the responder does not support the SEPARATE_TRANSPORTS
         notification (i.e., the notification is not echoed in the response),
@@ -247,14 +246,30 @@ N(SEPARATE_TRANSPORTS)  --->
         IP or are UDP encapsulated if NAT is detected. If UDP transport for
         ESP becomes unavailable (e.g., blocked by a firewall), peers MAY
         switch ESP to use TCP transport as specified in <xref
-        target="RFC9329"></xref>. Peers are responsible for maintaining NAT
-        mappings by sending NAT keepalive packets (see Section 2.23 of <xref
-        target="RFC7296"></xref>) when ESP over UDP is used. If ESP is
-        transported over a different protocol than IKE, intermediate devices
-        might apply different filtering rules. To detect possible connectivity
-        issues with ESP traffic, the encrypted ESP ping mechanism defined in
-        <xref target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref> MAY be
-        used.</t>
+        target="RFC9329"></xref>. If ESP is transported over a different
+        protocol than IKE, intermediate devices might apply different
+        filtering rules. To detect possible connectivity issues with ESP
+        traffic, the encrypted ESP ping mechanism defined in <xref
+        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref> MAY be used.</t>
+      </section>
+
+      <section title="NAT Considerations">
+        <t>When separate transports are used for IKEv2 and ESP, NAT traversal
+        for each transport must be handled independently, as intermediate
+        devices maintain NAT state per transport. </t>
+
+        <t>NAT detection follows the standard mechanism defined in Section
+        2.23 of <xref target="RFC7296"></xref>. The initiator SHOULD include
+        NAT_DETECTION_SOURCE_IP and NAT_DETECTION_DESTINATION_IP notifications
+        in IKE_SA_INIT, regardless of whether IKE_SA_INIT is sent over UDP or
+        TCP. NAT detection MAY be omitted only if it is known by other means
+        that no NAT is present on the path between the peers. If a NAT is
+        detected, ESP <bcp14>MUST</bcp14> use UDP encapsulation on port 4500 <xref
+        target="RFC3948"></xref>. Peers <bcp14>MUST</bcp14? maintain NAT mappings for the ESP
+        path by sending NAT keepalive packets as specified in Section 2.23 of
+        <xref target="RFC7296"></xref>, and <bcp14>MUST NOT</bcp14> assume that the TCP
+        connection used for IKEv2 provides any keepalive benefit for the ESP
+        UDP path.</t>
       </section>
     </section>
 
@@ -295,6 +310,8 @@ N(SEPARATE_TRANSPORTS)  --->
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7296.xml" ?>
 
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9329.xml" ?>
+
+      <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3948.xml" ?>
     </references>
 
     <references title="Informative References">
