@@ -274,8 +274,9 @@ N(SEPARATE_TRANSPORTS)  --->
         <section anchor="resume" title="Interaction with IKE Session Resumption">
             <t> Ike session resumption <xref target="RFC5723" /> allows peers to quicly re-establish IKE SA
             after the connection is broken. Since network condition may change while the client is inactive, 
-            the use of this separate transports <bcp14>MUST</bcp14> be re-negotiated during session resumption.
-            In particular, since no large public key are transferred in the IKE_SESSION_RESUME exchange,
+            the use of separate transports <bcp14>MUST NOT</bcp14> be stored in the resumption ticket
+            and <bcp14>MUST</bcp14> be re-negotiated during session resumption.
+            Since no large public key are transferred in the IKE_SESSION_RESUME exchange,
             the initiator while resuming <bcp14>SHOULD</bcp14> start using UDP as defined in <xref target="protocol_udp" />,
             since this allows more accurate detection of the precence of NATS and UDP connectivity 
             comparing to starting with TCP (as defined in <xref target="protocol_tcp" />).
