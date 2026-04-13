@@ -283,7 +283,7 @@ N(SEPARATE_TRANSPORTS)  --->
         provides any keepalive benefit for the ESP UDP path.</t>
       </section>
 
-      <section title="UDP Reachability Verification">
+      <section anchor="udp-reach" title="UDP Reachability Verification">
         <t>When IKEv2 starts over UDP (<xref target="protocol_udp"></xref>),
         the successful exchange of IKE_SA_INIT messages implicitly
         demonstrates that UDP is reachable and NAT detection results can be
@@ -292,28 +292,33 @@ N(SEPARATE_TRANSPORTS)  --->
 
         <t>When IKEv2 starts over TCP (<xref target="protocol_tcp"></xref>),
         there is no implicit evidence that ESP traffic is reachable. After the
-        Child SA is established, the initiator MUST verify ESP reachability by
-        sending an ESP Echo Request <xref
-        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref> before sending
-        regular ESP traffic. The number of retries and length of timeouts for
-        ESP Echo Requests are not covered in this specification because they
-        do not affect interoperability. If no ESP Echo Reply is received after
-        exhausting the retransmissions described below, the peers MUST switch
-        ESP to TCP as specified in <xref target="RFC9329"></xref>. The ESP
-        transport to probe is determined by the NAT detection results as
-        follows:</t>
+        Child SA is established, the initiator SHOULD verify ESP reachability
+        by sending an ESP Echo Request <xref
+        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref>, unless the
+        initiator has other means to ensure ESP reachability (for example, the
+        presence of incoming ESP traffic). The number of retries and length of
+        timeouts for ESP Echo Requests are not covered in this specification
+        because they do not affect interoperability. If no ESP Echo Reply is
+        received after exhausting the retransmissions described below, the
+        peers MUST switch ESP to TCP as specified in <xref
+        target="RFC9329"></xref>. The ESP transport to probe is determined by
+        the NAT detection results as follows:</t>
 
         <t><list style="symbols">
             <t>If a NAT was detected, the initiator MUST send the ESP Echo
             Request using UDP encapsulation on port 4500 <xref
-            target="RFC3948"></xref>.</t>
+            target="RFC3948"></xref>.I</t>
 
-            <t>If no NAT was detected, the initiator MUST first send the ESP
-            Echo Request with ESP sent directly over IP. If no ESP Echo Reply
-            is received after retransmission, the initiator MUST retry using
-            UDP encapsulation on port 4500 <xref target="RFC3948"></xref>,
-            since some middleboxes do not allow IP traffic without UDP or TCP
-            transport.</t>
+            <t>If no NAT was detected, the initiator MUST send an ESP Echo
+            Request with ESP sent directly over IP. If no ESP Echo Reply is
+            received after a short delay, the initiator MUST also send an ESP
+            Echo Request using UDP encapsulation on port 4500 <xref
+            target="RFC3948"></xref>, since some middleboxes do not allow IP
+            traffic without UDP or TCP transport. The initiator MUST use the
+            transport for which an ESP Echo Reply is received first. This
+            approach is analogous to the Happy Eyeballs algorithm <xref
+            target="RFC8305"></xref>, giving preference to ESP sent directly
+            over IP while avoiding excessive delay if it is not reachable.</t>
           </list></t>
       </section>
     </section>
@@ -330,6 +335,12 @@ N(SEPARATE_TRANSPORTS)  --->
         switch the IKE SA transport from TCP to UDP. However, an ESP SA
         <bcp14>MAY</bcp14> switch from UDP to TCP if UDP is blocked at the new
         IP address.</t>
+
+        <t>Similarly, when ESP is running over TCP and the initiator detects
+        an IP address change, the initiator MUST perform UDP reachability
+        verification as described in <xref target="udp-reach"></xref> on the
+        new path. If ESP reachability is confirmed, the ESP SA switches from
+        TCP to the verified path.</t>
       </section>
 
       <section anchor="resume" title="Interaction with IKE Session Resumption">
