@@ -301,7 +301,8 @@ N(SEPARATE_TRANSPORTS)  --->
         because they do not affect interoperability. If no ESP Echo Reply is
         received after exhausting the retransmissions described below, the
         peers MUST switch ESP to TCP as specified in <xref
-        target="RFC9329"></xref>. The ESP transport to probe is determined by
+        target="RFC9329"></xref>. If the initiator uses an ESP Echo Request to
+        verify ESP reachability, the ESP transport to probe is determined by
         the NAT detection results as follows:</t>
 
         <t><list style="symbols">
