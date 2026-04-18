@@ -77,12 +77,12 @@
       <t>Originally IKEv2 peers exchanged only a small amount of data, so that
       simple retransmission mechanism on top of UDP with no congestion control
       sufficed. The situation has changed when post-quantum cryptographic
-      (PQC) algorithms began to be incorporated into IKEv2 using multiple key exchanges <xref
-      target="RFC9370"></xref>. Most of post-quantum algorithms require IKE
-      peers to exchange much more data, than classical algorithms, up to tens
-      (or even hundreds) Kbytes. A few proposals exist that allow to overcome
-      the 64 Kbytes limitation on the size of an IKE payload (<xref
-      target="I-D.nir-ipsecme-big-payload"></xref>, <xref
+      (PQC) algorithms began to be incorporated into IKEv2 using multiple key
+      exchanges <xref target="RFC9370"></xref>. Most of post-quantum
+      algorithms require IKE peers to exchange much more data, than classical
+      algorithms, up to tens (or even hundreds) Kbytes. A few proposals exist
+      that allow to overcome the 64 Kbytes limitation on the size of an IKE
+      payload (<xref target="I-D.nir-ipsecme-big-payload"></xref>, <xref
       target="I-D.smyslov-ipsecme-ikev2-extended-pld"></xref>, <xref
       target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>).</t>
 
@@ -113,20 +113,21 @@
       the problem. However, the current use of TCP for IKE and ESP <xref
       target="RFC9329"></xref> implies that ESP SAs are also encapsulated in
       TCP, which has negative impact on IPsec performance (see Section 9 of
-      TCP encapsulation of IKE and ESP packets <xref target="RFC9329"></xref>).</t>
+      TCP encapsulation of IKE and ESP packets <xref
+      target="RFC9329"></xref>).</t>
 
       <t>This specification allows to decouple IKE and IPsec transports,
       making it possible to use a reliable transport for IKEv2 while
       continuing to use an unreliable transport for IPsec.</t>
 
-      <t>The proposed mechanism would enable the use of all parameter sets of a
-      post-quantum key exchange algorithm in IKE_SA_INIT as a
+      <t>The proposed mechanism would enable the use of all parameter sets of
+      a post-quantum key exchange algorithm in IKE_SA_INIT as a
       quantum-resistant-only key exchange. <!-- Unlike approaches that limit the
       parameter sets based on message size constraints, this specification
       supports the use of larger parameter sets when IKEv2 is transported over
-      TCP. --> This allows deployments requiring a pure post-quantum key exchange
-      to establish keys during the IKE_SA_INIT exchange without concerns about
-      exceeding typical network MTUs.</t>
+      TCP. --> This allows deployments requiring a pure post-quantum key
+      exchange to establish keys during the IKE_SA_INIT exchange without
+      concerns about exceeding typical network MTUs.</t>
 
       <t>The idea to decouple IKE and IPsec transports was originally
       presented in <xref
@@ -142,23 +143,25 @@
     </section>
 
     <section anchor="protocol" title="Protocol Details">
-      <section anchor="protocol_udp" title="Discovery of TCP Transport Support for IKEv2">
+      <section anchor="protocol_udp"
+               title="Discovery of TCP Transport Support for IKEv2">
         <t>If the initiator supports this extension, is configured to use it,
         and does not know whether the responder supports IKEv2 over TCP, the
-        initiator starts the IKE_SA_INIT exchange over UDP to responder's port 4500, as per
-        IKEv2 <xref target="RFC7296"></xref>. In this case, the initiator includes
-        the SEPARATE_TRANSPORTS notification (&lt;TBA by IANA&gt;) in the
-        IKE_SA_INIT request. This allows the initiator to discover whether the
-        responder supports the use of separate transports for IKE (over TCP)
-        and ESP (over UDP). Using UDP port 4500 ensures that IPsec traffic can
-        traverse NATs and intermediate devices that allow UDP encapsulation.
-        If the responder supports this extension and receives the
-        SEPARATE_TRANSPORTS notification in the IKE_SA_INIT request, it
-        responds with the same notification in the IKE_SA_INIT response. Upon
-        receiving the SEPARATE_TRANSPORTS notification in the response, the
-        initiator <bcp14>MUST</bcp14> switch to TCP port 4500 for subsequent exchanges
-        (IKE_INTERMEDIATE or IKE_AUTH). The responder <bcp14>MUST</bcp14> be prepared to
-        receive these exchanges over TCP.</t>
+        initiator starts the IKE_SA_INIT exchange over UDP to responder's port
+        4500, as per IKEv2 <xref target="RFC7296" />. In this case, the
+        initiator includes the SEPARATE_TRANSPORTS notification (&lt;TBA by
+        IANA&gt;) in the IKE_SA_INIT request. This allows the initiator to
+        discover whether the responder supports the use of separate transports
+        for IKE (over TCP) and ESP (over UDP). Using UDP port 4500 ensures
+        that IPsec traffic can traverse NATs and intermediate devices that
+        allow UDP encapsulation. If the responder has this extension enabled
+        and receives the SEPARATE_TRANSPORTS notification in the IKE_SA_INIT
+        request, it MUST respond with the same notification in the IKE_SA_INIT
+        response. Upon receiving the SEPARATE_TRANSPORTS notification in the
+        response, the initiator <bcp14>MUST</bcp14> switch to TCP port 4500
+        for subsequent exchanges (IKE_INTERMEDIATE or IKE_AUTH). The responder
+        <bcp14>MUST</bcp14> be prepared to receive these exchanges over
+        TCP.</t>
 
         <t><figure>
             <artwork align="center"><![CDATA[
@@ -182,27 +185,32 @@ N(SEPARATE_TRANSPORTS)  --->
           </figure></t>
       </section>
 
-      <section anchor="protocol_tcp" title="Using TCP Transport for IKEv2 from the Start">
-        <t>Alternatively, the initiator <bcp14>MAY</bcp14> start IKE_SA_INIT over TCP port
-        4500 directly, as specified in TCP encapsulation of IKE and ESP packets <xref target="RFC9329"></xref>, for
-        example, when large key exchange payloads (with large public keys) are
-        used in IKE_SA_INIT. In this case, the initiator includes the SEPARATE_TRANSPORTS
-        notification in the IKE_SA_INIT request to indicate its preference to
-        use separate transports; IKEv2 over TCP and ESP over UDP, provided
-        that UDP is not blocked in the network path.</t>
+      <section anchor="protocol_tcp"
+               title="Using TCP Transport for IKEv2 from the Start">
+        <t>Alternatively, the initiator <bcp14>MAY</bcp14> start IKE_SA_INIT
+        over TCP port 4500 directly, as specified in TCP encapsulation of IKE
+        and ESP packets <xref target="RFC9329" />, for example, when large key
+        exchange payloads (with large public keys) are used in IKE_SA_INIT. In
+        this case, the initiator includes the SEPARATE_TRANSPORTS notification
+        in the IKE_SA_INIT request to indicate its preference to use separate
+        transports; IKEv2 over TCP and ESP over UDP, provided that UDP is not
+        blocked in the network path.</t>
 
         <t>If the responder supports this extension, it includes the
         SEPARATE_TRANSPORTS notification in the IKE_SA_INIT response. In this
         case, Child SAs are created as specified in IKEv2 <xref
         target="RFC7296"></xref>, with ESP sent over UDP (or directly over IP)
         if possible. If both UDP and IP are blocked, ESP is sent over TCP as
-        described in TCP encapsulation of IKE and ESP packets <xref target="RFC9329"></xref>. </t>
-
-        <t>If the responder does not return the SEPARATE_TRANSPORTS notification in the IKE_SA_INIT response,
-        the initiator <bcp14>MUST</bcp14> treat this as an indication that the responder does
-        not support separate transports. In this case, both IKEv2 and ESP <bcp14>MUST</bcp14>
-        use TCP transport for all subsequent exchanges, as per TCP encapsulation of IKE and ESP packets <xref
+        described in TCP encapsulation of IKE and ESP packets <xref
         target="RFC9329"></xref>.</t>
+
+        <t>If the responder does not return the SEPARATE_TRANSPORTS
+        notification in the IKE_SA_INIT response, the initiator
+        <bcp14>MUST</bcp14> treat this as an indication that the responder
+        does not support separate transports. In this case, both IKEv2 and ESP
+        <bcp14>MUST</bcp14> use TCP transport for all subsequent exchanges, as
+        per TCP encapsulation of IKE and ESP packets <xref
+        target="RFC9329" />.</t>
 
         <t><figure>
             <artwork align="center"><![CDATA[
@@ -227,10 +235,12 @@ N(SEPARATE_TRANSPORTS)  --->
       </section>
 
       <section title="Subsequent IKEv2 Exchanges">
-          <t>In both scenarios described above (<xref target="protocol_udp" /> and <xref target="protocol_tcp" />), once the IKEv2 SA switches to TCP
-          transport, either after IKE_SA_INIT or if TCP was used from the
-          beginning, all subsequent IKEv2 exchanges <bcp14>MUST</bcp14> continue to use
-          TCP. The interaction with MOBIKE is described in <xref target="mobike" />.</t>
+        <t>In both scenarios described above (<xref target="protocol_udp" />
+        and <xref target="protocol_tcp" />), once the IKEv2 SA switches to TCP
+        transport, either after IKE_SA_INIT or if TCP was used from the
+        beginning, all subsequent IKEv2 exchanges <bcp14>MUST</bcp14> continue
+        to use TCP. The interaction with MOBIKE is described in <xref
+        target="mobike" />.</t>
       </section>
 
       <section title="Notification Format">
@@ -257,50 +267,102 @@ N(SEPARATE_TRANSPORTS)  --->
       <section title="NAT Considerations">
         <t>When separate transports are used for IKEv2 and ESP, NAT traversal
         for each transport must be handled independently, as intermediate
-        devices maintain NAT state per transport. </t>
+        devices maintain NAT state per transport.</t>
 
         <t>NAT detection follows the standard mechanism defined in Section
-        2.23 of <xref target="RFC7296"></xref>. The initiator SHOULD include
+        2.23 of <xref target="RFC7296" />. The initiator SHOULD include
         NAT_DETECTION_SOURCE_IP and NAT_DETECTION_DESTINATION_IP notifications
         in IKE_SA_INIT, regardless of whether IKE_SA_INIT is sent over UDP or
         TCP. NAT detection MAY be omitted only if it is known by other means
         that no NAT is present on the path between the peers. If a NAT is
-        detected, ESP <bcp14>MUST</bcp14> use UDP encapsulation on port 4500 <xref
-        target="RFC3948"></xref>. Peers <bcp14>MUST</bcp14> maintain NAT mappings for the ESP
-        path by sending NAT keepalive packets as specified in Section 2.23 of
-        <xref target="RFC7296"></xref>, and <bcp14>MUST NOT</bcp14> assume that the TCP
-        connection used for IKEv2 provides any keepalive benefit for the ESP
-        UDP path.</t>
+        detected, ESP <bcp14>MUST</bcp14> use UDP encapsulation on port 4500
+        <xref target="RFC3948" />. Peers <bcp14>MUST</bcp14> maintain NAT
+        mappings for the ESP path by sending NAT keepalive packets as
+        specified in Section 2.23 of <xref target="RFC7296" />, and
+        <bcp14>MUST NOT</bcp14> assume that the TCP connection used for IKEv2
+        provides any keepalive benefit for the ESP UDP path.</t>
+      </section>
+
+      <section anchor="udp-reach" title="UDP Reachability Verification">
+        <t>When IKEv2 starts over UDP (<xref target="protocol_udp"></xref>),
+        the successful exchange of IKE_SA_INIT messages implicitly
+        demonstrates that UDP is reachable and NAT detection results can be
+        used to determine whether ESP should be sent directly over IP or UDP
+        encapsulated. No additional verification is needed.</t>
+
+        <t>When IKEv2 starts over TCP (<xref target="protocol_tcp"></xref>),
+        there is no implicit evidence that ESP traffic is reachable. After the
+        Child SA is established, the initiator SHOULD verify ESP reachability
+        by sending an ESP Echo Request <xref
+        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref>, unless the
+        initiator has other means to ensure ESP reachability (for example, the
+        presence of incoming ESP traffic). The number of retries and length of
+        timeouts for ESP Echo Requests are not covered in this specification
+        because they do not affect interoperability. If no ESP Echo Reply is
+        received after exhausting the retransmissions described below, the
+        peers MUST switch ESP to TCP as specified in <xref
+        target="RFC9329"></xref>. If the initiator uses an ESP Echo Request to
+        verify ESP reachability, the ESP transport to probe is determined by
+        the NAT detection results as follows:</t>
+
+        <t><list style="symbols">
+            <t>If a NAT was detected, the initiator MUST send the ESP Echo
+            Request using UDP encapsulation on port 4500 <xref
+            target="RFC3948"></xref>.I</t>
+
+            <t>If no NAT was detected, the initiator MUST send an ESP Echo
+            Request with ESP sent directly over IP. If no ESP Echo Reply is
+            received after a short delay, the initiator MUST also send an ESP
+            Echo Request using UDP encapsulation on port 4500 <xref
+            target="RFC3948"></xref>, since some middleboxes do not allow IP
+            traffic without UDP or TCP transport. The initiator MUST use the
+            transport for which an ESP Echo Reply is received first. This
+            approach is analogous to the Happy Eyeballs algorithm <xref
+            target="RFC8305"></xref>, giving preference to ESP sent directly
+            over IP while avoiding excessive delay if it is not reachable.</t>
+          </list></t>
       </section>
     </section>
 
     <section anchor="interaction" title="Interaction with IKEv2 Extensions">
-        <section anchor="mobike" title="Interaction with MOBIKE">
-          <t>MOBIKE <xref target="RFC4555"></xref> allows an IKE SA, along with
-          its Child SAs, to migrate from one IP address to another. Section 7.1 of
-          TCP encapsulation of IKE and ESP packets <xref target="RFC9329"></xref> specifies that when using TCP as the IKE
-          transport, a peer should attempt to switch back to UDP in the event of
-          an IP address change. This specification updates that requirement: when
-          separate transports are used for IKE and ESP, peers <bcp14>MUST</bcp14> NOT attempt to
-          switch the IKE SA transport from TCP to UDP. However, an ESP SA <bcp14>MAY</bcp14>
-          switch from UDP to TCP if UDP is blocked at the new IP address.</t>
-        </section>
+      <section anchor="mobike" title="Interaction with MOBIKE">
+        <t>MOBIKE <xref target="RFC4555" /> allows an IKE SA, along with its
+        Child SAs, to migrate from one IP address to another. Section 7.1 of
+        TCP encapsulation of IKE and ESP packets <xref target="RFC9329" />
+        specifies that when using TCP as the IKE transport, a peer should
+        attempt to switch back to UDP in the event of an IP address change.
+        This specification updates that requirement: when separate transports
+        are used for IKE and ESP, peers <bcp14>MUST</bcp14> NOT attempt to
+        switch the IKE SA transport from TCP to UDP. However, an ESP SA
+        <bcp14>MAY</bcp14> switch from UDP to TCP if UDP is blocked at the new
+        IP address.</t>
 
-        <section anchor="resume" title="Interaction with IKE Session Resumption">
-            <t> Ike session resumption <xref target="RFC5723" /> allows peers to quicly re-establish IKE SA
-            after the connection is broken. Since network condition may change while the client is inactive, 
-            the use of separate transports <bcp14>MUST NOT</bcp14> be stored in the resumption ticket
-            and <bcp14>MUST</bcp14> be re-negotiated during session resumption.
-            Since no large public keys are transferred in the IKE_SESSION_RESUME exchange, then,
-            unless configured to use TCP only, the initiator, when resuming, <bcp14>MUST</bcp14> start using UDP with destination port 4500, 
-            as discussed in <xref target="protocol_udp" />. This enables NAT detection for UDP and UDP reachability testing before switching to TCP.
-            </t>
-        </section>
+        <t>Similarly, when ESP is running over TCP and the initiator detects
+        an IP address change, the initiator MUST perform UDP reachability
+        verification as described in <xref target="udp-reach"></xref> on the
+        new path. If ESP reachability is confirmed, the ESP SA switches from
+        TCP to the verified path.</t>
+      </section>
+
+      <section anchor="resume" title="Interaction with IKE Session Resumption">
+        <t>IKE session resumption <xref target="RFC5723" /> allows peers to
+        quicly re-establish IKE SA after the connection is broken. Since
+        network condition may change while the client is inactive, the use of
+        separate transports <bcp14>MUST NOT</bcp14> be stored in the
+        resumption ticket and <bcp14>MUST</bcp14> be re-negotiated during
+        session resumption. Since no large public keys are transferred in the
+        IKE_SESSION_RESUME exchange, then, unless configured to use TCP only,
+        the initiator, when resuming, <bcp14>MUST</bcp14> start using UDP with
+        destination port 4500, as discussed in <xref target="protocol_udp" />.
+        This enables NAT detection for UDP and UDP reachability testing before
+        switching to TCP.</t>
+      </section>
     </section>
 
     <section anchor="security" title="Security Considerations">
-      <t>Section 10 of TCP encapsulation of IKE and ESP packets <xref target="RFC9329"></xref> discusses security
-      implications of using TCP as IKE transport.</t>
+      <t>Section 10 of TCP encapsulation of IKE and ESP packets <xref
+      target="RFC9329"></xref> discusses security implications of using TCP as
+      IKE transport.</t>
     </section>
 
     <section anchor="iana" title="IANA Considerations">
@@ -326,11 +388,11 @@ N(SEPARATE_TRANSPORTS)  --->
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.9329.xml" ?>
 
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.3948.xml" ?>
+
+      <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4555.xml" ?>
     </references>
 
     <references title="Informative References">
-      <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4555.xml" ?>
-
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5723.xml" ?>
 
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7383.xml" ?>
