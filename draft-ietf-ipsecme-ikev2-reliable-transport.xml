@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <rfc category="std" docName="draft-ietf-ipsecme-ikev2-reliable-transport-01"
-     ipr="trust200902" submissionType="IETF" updates="RFC9329" xml:lang="en">
+     ipr="trust200902" submissionType="IETF" updates="" xml:lang="en">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
@@ -164,8 +164,8 @@
         When establishing the TCP connection, the initiator MUST include the
         IKETCP prefix as specified in Section 3.1 of <xref
         target="RFC9329" />. If the initiator is unable to establish a TCP
-        connection to port 4500, it <bcp14>MUST</bcp14> continue the IKE
-        exchange over UDP without separate transports.</t>
+        connection to port 4500, it <bcp14>MUST</bcp14> it MUST restart the 
+        IKE_SA_INIT exchange over UDP without proposing separate transports.</t>
 
         <t><figure>
             <artwork align="center"><![CDATA[
