@@ -397,13 +397,13 @@ N(SEPARATE_TRANSPORTS)  --->
 
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.4555.xml" ?>
 
-      <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" ?>
-
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-ipsecme-encrypted-esp-ping.xml" ?>
     </references>
 
     <references title="Informative References">
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.5723.xml" ?>
+
+      <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.8305.xml" ?>
 
       <?rfc include="https://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.7383.xml" ?>
 
