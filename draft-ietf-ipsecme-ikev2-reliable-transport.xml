@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <rfc category="std" docName="draft-ietf-ipsecme-ikev2-reliable-transport-01"
-     ipr="trust200902" submissionType="IETF" updates="" xml:lang="en">
+     ipr="trust200902" submissionType="IETF" xml:lang="en">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
   <?rfc toc="yes" ?>
