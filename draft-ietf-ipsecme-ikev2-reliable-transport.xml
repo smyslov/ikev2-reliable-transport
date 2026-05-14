@@ -167,7 +167,7 @@
         connection to port 4500, it <bcp14>MUST</bcp14> cancel the current IKE SA establishment.
         The initiator in this case can restart the
         IKE_SA_INIT exchange over UDP without proposing separate
-        transports, providing that UDP unreliability is not a critical issue for the proposed transforms.</t>
+        transports, provided that UDP unreliability is not a critical issue for the proposed transforms.</t>
 
         <t><figure>
             <artwork align="center"><![CDATA[
