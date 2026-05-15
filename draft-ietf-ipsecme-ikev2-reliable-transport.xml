@@ -300,7 +300,7 @@ N(SEPARATE_TRANSPORTS)  --->
         Child SA is established, the initiator <bcp14>SHOULD</bcp14> verify ESP reachability,
         unless it has other means to do so (for example, the presence of
         incoming ESP traffic). If ESP reachability cannot be confirmed, the
-        initiator <bcp14>MUST</bcp14> switch ESP to TCP as specified in <xref
+        initiator <bcp14>MUST</bcp14> delete the current IKE SA (with DELETE payload) and re-establish it over TCP without proposing separate transport for ESP, as specified in <xref
         target="RFC9329"></xref>. The ESP transport to probe is determined by
         the NAT detection results as follows:</t>
 
