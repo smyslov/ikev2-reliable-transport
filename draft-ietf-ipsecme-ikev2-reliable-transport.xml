@@ -156,18 +156,19 @@
         that IPsec traffic can traverse NATs and intermediate devices that
         allow UDP encapsulation. If the responder has this extension enabled
         and receives the SEPARATE_TRANSPORTS notification in the IKE_SA_INIT
-        request, it <bcp14>MUST</bcp14> respond with the same notification in the IKE_SA_INIT
-        response. Upon receiving the SEPARATE_TRANSPORTS notification in the
-        response, the initiator <bcp14>MUST</bcp14> switch to TCP port 4500
-        for subsequent exchanges (IKE_INTERMEDIATE or IKE_AUTH). The responder
-        <bcp14>MUST</bcp14> be prepared to receive these exchanges over TCP.
-        When establishing the TCP connection, the initiator <bcp14>MUST</bcp14> include the
-        IKETCP prefix as specified in Section 3.1 of <xref
-        target="RFC9329" />. If the initiator is unable to establish a TCP
-        connection to port 4500, it <bcp14>MUST</bcp14> cancel the current IKE SA establishment.
-        The initiator in this case can restart the
-        IKE_SA_INIT exchange over UDP without proposing separate
-        transports, provided that UDP unreliability is not a critical issue for the proposed transforms.</t>
+        request, it <bcp14>MUST</bcp14> respond with the same notification in
+        the IKE_SA_INIT response. Upon receiving the SEPARATE_TRANSPORTS
+        notification in the response, the initiator <bcp14>MUST</bcp14> switch
+        to TCP port 4500 for subsequent exchanges (IKE_INTERMEDIATE or
+        IKE_AUTH). The responder <bcp14>MUST</bcp14> be prepared to receive
+        these exchanges over TCP. When establishing the TCP connection, the
+        initiator <bcp14>MUST</bcp14> include the IKETCP prefix as specified
+        in Section 3.1 of <xref target="RFC9329" />. If the initiator is
+        unable to establish a TCP connection to port 4500, it
+        <bcp14>MUST</bcp14> cancel the current IKE SA establishment. The
+        initiator in this case can restart the IKE_SA_INIT exchange over UDP
+        without proposing separate transports, provided that UDP unreliability
+        is not a critical issue for the proposed transforms.</t>
 
         <t><figure>
             <artwork align="center"><![CDATA[
@@ -258,15 +259,16 @@ N(SEPARATE_TRANSPORTS)  --->
 
       <section title="ESP Behavior">
         <t>Child SAs are created as specified in IKEv2 <xref
-        target="RFC7296"></xref>. ESP packets either use direct transport over
-        IP or are UDP encapsulated if NAT is detected. If UDP transport for
-        ESP becomes unavailable (e.g., blocked by a firewall), peers <bcp14>MAY</bcp14>
-        switch ESP to use TCP transport as specified in <xref
-        target="RFC9329"></xref>. If ESP is transported over a different
+        target="RFC7296" />. ESP packets either use direct transport over IP
+        or are UDP encapsulated if NAT is detected. If UDP transport for ESP
+        becomes unavailable (e.g., blocked by a firewall), peers
+        <bcp14>MAY</bcp14> switch ESP to use TCP transport as specified in
+        <xref target="RFC9329" />. If ESP is transported over a different
         protocol than IKE, intermediate devices might apply different
         filtering rules. To detect possible connectivity issues with ESP
         traffic, the encrypted ESP ping mechanism defined in <xref
-        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref> <bcp14>MAY</bcp14> be used.</t>
+        target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be
+        used.</t>
       </section>
 
       <section title="NAT Considerations">
@@ -275,17 +277,18 @@ N(SEPARATE_TRANSPORTS)  --->
         devices maintain NAT state per transport.</t>
 
         <t>NAT detection follows the standard mechanism defined in Section
-        2.23 of <xref target="RFC7296" />. The initiator <bcp14>SHOULD</bcp14> include
-        NAT_DETECTION_SOURCE_IP and NAT_DETECTION_DESTINATION_IP notifications
-        in IKE_SA_INIT, regardless of whether IKE_SA_INIT is sent over UDP or
-        TCP. NAT detection <bcp14>MAY</bcp14> be omitted only if it is known by other means
-        that no NAT is present on the path between the peers. If a NAT is
-        detected, ESP <bcp14>MUST</bcp14> use UDP encapsulation on port 4500
-        <xref target="RFC3948" />. Peers <bcp14>MUST</bcp14> maintain NAT
-        mappings for the ESP path by sending NAT keepalive packets as
-        specified in Section 2.23 of <xref target="RFC7296" />, and
-        <bcp14>MUST NOT</bcp14> assume that the TCP connection used for IKEv2
-        provides any keepalive benefit for the ESP UDP path.</t>
+        2.23 of <xref target="RFC7296" />. The initiator <bcp14>SHOULD</bcp14>
+        include NAT_DETECTION_SOURCE_IP and NAT_DETECTION_DESTINATION_IP
+        notifications in IKE_SA_INIT, regardless of whether IKE_SA_INIT is
+        sent over UDP or TCP. NAT detection <bcp14>MAY</bcp14> be omitted only
+        if it is known by other means that no NAT is present on the path
+        between the peers. If a NAT is detected, ESP <bcp14>MUST</bcp14> use
+        UDP encapsulation on port 4500 <xref target="RFC3948" />. Peers
+        <bcp14>MUST</bcp14> maintain NAT mappings for the ESP path by sending
+        NAT keepalive packets as specified in Section 2.23 of <xref
+        target="RFC7296" />, and <bcp14>MUST NOT</bcp14> assume that the TCP
+        connection used for IKEv2 provides any keepalive benefit for the ESP
+        UDP path.</t>
       </section>
 
       <section anchor="udp-reach" title="UDP Reachability Verification">
@@ -295,28 +298,32 @@ N(SEPARATE_TRANSPORTS)  --->
         used to determine whether ESP should be sent directly over IP or UDP
         encapsulated. No additional verification is needed.</t>
 
-        <t>When IKEv2 starts over TCP (<xref target="protocol_tcp"></xref>),
-        there is no implicit evidence that ESP traffic is reachable. After the
-        Child SA is established, the initiator <bcp14>SHOULD</bcp14> verify ESP reachability,
-        unless it has other means to do so (for example, the presence of
-        incoming ESP traffic). If ESP reachability cannot be confirmed, the
-        initiator <bcp14>MUST</bcp14> delete the current IKE SA (with DELETE payload) and re-establish it over TCP without proposing separate transport for ESP, as specified in <xref
-        target="RFC9329"></xref>. The ESP transport to probe is determined by
-        the NAT detection results as follows:</t>
+        <t>When IKEv2 starts over TCP (<xref target="protocol_tcp" />), there
+        is no implicit evidence that ESP traffic is reachable. After the Child
+        SA is established, the initiator <bcp14>SHOULD</bcp14> verify ESP
+        reachability, unless it has other means to do so (for example, the
+        presence of incoming ESP traffic). If ESP reachability cannot be
+        confirmed, the initiator <bcp14>MUST</bcp14> delete the current IKE SA
+        (with DELETE payload) and re-establish it over TCP without proposing
+        separate transport for ESP, as specified in <xref target="RFC9329" />.
+        The ESP transport to probe is determined by the NAT detection results
+        as follows:</t>
 
         <t><list style="symbols">
-            <t>If a NAT was detected, the initiator <bcp14>SHOULD</bcp14> probe ESP using UDP
-            encapsulation on port 4500 <xref target="RFC3948"></xref>.</t>
+            <t>If a NAT was detected, the initiator <bcp14>SHOULD</bcp14>
+            probe ESP using UDP encapsulation on port 4500 <xref
+            target="RFC3948" />.</t>
 
-            <t>If no NAT was detected, the initiator <bcp14>SHOULD</bcp14> probe ESP directly
-            over IP. If no response is received after a short delay, the
-            initiator <bcp14>SHOULD</bcp14> also probe using UDP encapsulation on port 4500
-            <xref target="RFC3948"></xref>, since some middleboxes do not
-            allow IP traffic without UDP or TCP transport. The initiator <bcp14>MUST</bcp14>
-            use the transport for which a response is received first. This
-            approach is analogous to the Happy Eyeballs algorithm <xref
-            target="RFC8305"></xref>, giving preference to ESP sent directly
-            over IP while avoiding excessive delay if it is not reachable.</t>
+            <t>If no NAT was detected, the initiator <bcp14>SHOULD</bcp14>
+            probe ESP directly over IP. If no response is received after a
+            short delay, the initiator <bcp14>SHOULD</bcp14> also probe using
+            UDP encapsulation on port 4500 <xref target="RFC3948" />, since
+            some middleboxes do not allow IP traffic without UDP or TCP
+            transport. The initiator <bcp14>MUST</bcp14> use the transport for
+            which a response is received first. This approach is analogous to
+            the Happy Eyeballs algorithm <xref target="RFC8305" />, giving
+            preference to ESP sent directly over IP while avoiding excessive
+            delay if it is not reachable.</t>
           </list>One way to perform this verification is to use an ESP Echo
         Request <xref
         target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref>.</t>
@@ -337,10 +344,10 @@ N(SEPARATE_TRANSPORTS)  --->
         IP address.</t>
 
         <t>Similarly, when ESP is running over TCP and the initiator detects
-        an IP address change, the initiator <bcp14>MUST</bcp14> perform UDP reachability
-        verification as described in <xref target="udp-reach"></xref> on the
-        new path. If ESP reachability is confirmed, the ESP SA switches from
-        TCP to the verified path.</t>
+        an IP address change, the initiator <bcp14>MUST</bcp14> perform UDP
+        reachability verification as described in <xref target="udp-reach" />
+        on the new path. If ESP reachability is confirmed, the ESP SA switches
+        from TCP to the verified path.</t>
       </section>
 
       <section anchor="resume" title="Interaction with IKE Session Resumption">
@@ -356,10 +363,23 @@ N(SEPARATE_TRANSPORTS)  --->
       </section>
     </section>
 
+    <section anchor="ops" title="Operational Considerations">
+      <t>If ESP reachability cannot be confirmed when IKEv2 is carried over
+      TCP, this can affect availability and may cause the IKE SA to be
+      re-established using the fallback behavior described in <xref
+      target="udp-reach"></xref>. It is recommended that implementations log
+      this condition and make it visible to operators. It is also recommended
+      that deployments define a local policy governing whether fallback to ESP
+      over TCP is acceptable or whether IKE SA establishment is to be
+      aborted.</t>
+    </section>
+
     <section anchor="security" title="Security Considerations">
       <t>Section 10 of TCP encapsulation of IKE and ESP packets <xref
       target="RFC9329"></xref> discusses security implications of using TCP as
-      IKE transport.</t>
+      IKE transport. Failure to confirm ESP reachability does not by itself
+      weaken IKEv2 authentication or the cryptographic protection of the
+      negotiated Child SA.</t>
     </section>
 
     <section anchor="iana" title="IANA Considerations">
@@ -374,8 +394,8 @@ N(SEPARATE_TRANSPORTS)  --->
     </section>
 
     <section anchor="ACK" title="IAcknowledgments">
-      <t>Thanks to Hannes Tschofenig, Dan Wing and Andrew Cagney for the
-      discussion and comments.</t>
+      <t>Thanks to Hannes Tschofenig, Dan Wing, Songbo Bu and Andrew Cagney
+      for the discussion and comments.</t>
     </section>
   </middle>
 
