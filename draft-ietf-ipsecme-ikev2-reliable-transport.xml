@@ -132,6 +132,9 @@
       <t>The idea to decouple IKE and IPsec transports was originally
       presented in <xref
       target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>.</t>
+
+      <t>This specification requires support for NAT Traversal as defined in
+      Section 2.23 of <xref target="RFC7296"></xref>. </t>
     </section>
 
     <section anchor="mustshouldmay" title="Terminology and Notation">
@@ -143,6 +146,12 @@
     </section>
 
     <section anchor="protocol" title="Protocol Details">
+      <t>This section describes two modes of operation. In the first mode
+      (<xref target="protocol_udp"></xref>), IKE_SA_INIT is sent over UDP and
+      the initiator switches to TCP after discovering responder support. In
+      the second mode (<xref target="protocol_tcp"></xref>), IKE_SA_INIT is
+      sent directly over TCP.</t>
+
       <section anchor="protocol_udp"
                title="Discovery of TCP Transport Support for IKEv2">
         <t>If the initiator supports this extension, is configured to use it,
@@ -394,8 +403,8 @@ N(SEPARATE_TRANSPORTS)  --->
     </section>
 
     <section anchor="ACK" title="IAcknowledgments">
-      <t>Thanks to Hannes Tschofenig, Dan Wing, Songbo Bu and Andrew Cagney
-      for the discussion and comments.</t>
+      <t>Thanks to Hannes Tschofenig, Dan Wing, Songbo Bu, Wang Guilin and
+      Andrew Cagney for the discussion and comments.</t>
     </section>
   </middle>
 
