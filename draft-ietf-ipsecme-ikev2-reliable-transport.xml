@@ -200,8 +200,7 @@ N(SEPARATE_TRANSPORTS)  --->
           ]]></artwork>
           </figure></t>
 
-        <t>In this mode the IKE_SA_INIT exchange, including the first key
-        exchange (KEi1/KEr1), is performed over UDP; per <xref
+        <t>In this mode the IKE_SA_INIT exchange is performed over UDP; per <xref
         target="RFC9370" /> the first key exchange always takes place in
         IKE_SA_INIT and cannot be deferred to a later exchange. This mode
         therefore supports a hybrid key exchange, in which a traditional key
