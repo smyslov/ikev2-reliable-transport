@@ -199,6 +199,21 @@ N(SEPARATE_TRANSPORTS)  --->
 => ESP directly over IP or ESP with UDP encapsulation - depending on the presence of NATs
           ]]></artwork>
           </figure></t>
+
+        <t>In this mode the IKE_SA_INIT exchange is performed over UDP; per <xref
+        target="RFC9370" /> the first key exchange always takes place in
+        IKE_SA_INIT and cannot be deferred to a later exchange. This mode
+        therefore supports a hybrid key exchange, in which a traditional key
+        exchange is performed in IKE_SA_INIT over UDP and one or more
+        post-quantum key exchanges are performed in IKE_INTERMEDIATE exchanges
+        <xref target="RFC9370" /> over TCP, as well as a post-quantum-only key
+        exchange when the IKE_SA_INIT payloads fit within the limits of UDP
+. A
+        post-quantum-only key exchange whose payloads do not fit within those
+        limits requires reliable transport from the start and uses the mode
+        described in <xref target="protocol_tcp" />. When multiple key
+        exchanges are used, key derivation follows <xref target="RFC9370" />
+        and is independent of the transport used for each exchange.</t>
       </section>
 
       <section anchor="protocol_tcp"
