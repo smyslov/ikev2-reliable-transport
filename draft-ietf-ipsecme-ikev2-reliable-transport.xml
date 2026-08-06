@@ -130,8 +130,7 @@
       concerns about exceeding typical network MTUs.</t>
 
       <t>The idea to decouple IKE and IPsec transports was originally
-      presented in <xref
-      target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>.</t>
+      presented in <xref target="I-D.tjhai-ikev2-beyond-64k-limit"></xref>.</t>
 
       <t>This specification requires support for NAT Traversal as defined in
       Section 2.23 of <xref target="RFC7296"></xref>. </t>
@@ -152,8 +151,7 @@
       the second mode (<xref target="protocol_tcp"></xref>), IKE_SA_INIT is
       sent directly over TCP.</t>
 
-      <section anchor="protocol_udp"
-               title="Discovery of TCP Transport Support for IKEv2">
+      <section anchor="protocol_udp" title="Discovery of TCP Transport Support for IKEv2">
         <t>If the initiator supports this extension, is configured to use it,
         and does not know whether the responder supports IKEv2 over TCP, the
         initiator starts the IKE_SA_INIT exchange over UDP to responder's port
@@ -196,7 +194,8 @@ N(SEPARATE_TRANSPORTS)  --->
 
 => Initiator switches to TCP:4500 for IKE_INTERMEDIATE / 
    IKE_AUTH / subsequent IKEv2 exchanges (with IKETCP prefix) 
-=> ESP directly over IP or ESP with UDP encapsulation - depending on the presence of NATs
+=> ESP directly over IP or ESP with UDP encapsulation 
+   depending on the presence of NATs
           ]]></artwork>
           </figure></t>
 
@@ -207,8 +206,7 @@ N(SEPARATE_TRANSPORTS)  --->
         exchange is performed in IKE_SA_INIT over UDP and one or more
         post-quantum key exchanges are performed in IKE_INTERMEDIATE exchanges
         <xref target="RFC9370" /> over TCP, as well as a post-quantum-only key
-        exchange when the IKE_SA_INIT payloads fit within the limits of UDP
-. A
+        exchange when the IKE_SA_INIT payloads fit within the limits of UDP. A
         post-quantum-only key exchange whose payloads do not fit within those
         limits requires reliable transport from the start and uses the mode
         described in <xref target="protocol_tcp" />. When multiple key
@@ -216,8 +214,7 @@ N(SEPARATE_TRANSPORTS)  --->
         and is independent of the transport used for each exchange.</t>
       </section>
 
-      <section anchor="protocol_tcp"
-               title="Using TCP Transport for IKEv2 from the Start">
+      <section anchor="protocol_tcp" title="Using TCP Transport for IKEv2 from the Start">
         <t>Alternatively, the initiator <bcp14>MAY</bcp14> start IKE_SA_INIT
         over TCP port 4500 directly, as specified in TCP encapsulation of IKE
         and ESP packets <xref target="RFC9329" />, for example, when large key
@@ -258,8 +255,9 @@ N(SEPARATE_TRANSPORTS)  --->
                              <---  N(SEPARATE_TRANSPORTS)
 
 
-=> All subsequent IKEv2 messages continue over TCP  
-=> ESP directly over IP or ESP with UDP encapsulation - depending on the presence of NATs, else over TCP
+=> All subsequent IKEv2 exchanges continue over TCP  
+=> ESP directly over IP or ESP with UDP encapsulation 
+   depending on the presence of NATs, else over TCP
           ]]></artwork>
           </figure></t>
       </section>
@@ -295,11 +293,7 @@ N(SEPARATE_TRANSPORTS)  --->
         used.</t>
       </section>
 
-      <section title="NAT Considerations">
-        <t>When separate transports are used for IKEv2 and ESP, NAT traversal
-        for each transport must be handled independently, as intermediate
-        devices maintain NAT state per transport.</t>
-
+      <section anchor="nat" title="NAT Considerations">
         <t>NAT detection follows the standard mechanism defined in Section
         2.23 of <xref target="RFC7296" />. The initiator <bcp14>SHOULD</bcp14>
         include NAT_DETECTION_SOURCE_IP and NAT_DETECTION_DESTINATION_IP
@@ -307,12 +301,30 @@ N(SEPARATE_TRANSPORTS)  --->
         sent over UDP or TCP. NAT detection <bcp14>MAY</bcp14> be omitted only
         if it is known by other means that no NAT is present on the path
         between the peers. If a NAT is detected, ESP <bcp14>MUST</bcp14> use
-        UDP encapsulation on port 4500 <xref target="RFC3948" />. Peers
+        UDP encapsulation on port 4500 <xref target="RFC3948" />. 
+        </t>
+
+        <t>However, when separate transports are used for IKEv2 and ESP, NAT traversal
+        for each transport <bcp14>MUST</bcp14> be handled independently, as intermediate
+        devices maintain NAT state per transport. Peers
         <bcp14>MUST</bcp14> maintain NAT mappings for the ESP path by sending
         NAT keepalive packets as specified in Section 2.23 of <xref
         target="RFC7296" />, and <bcp14>MUST NOT</bcp14> assume that the TCP
         connection used for IKEv2 provides any keepalive benefit for the ESP
-        UDP path.</t>
+        UDP path. 
+        </t>
+
+        <t> In addtition, dynamic update of peer IP address and port 
+        by the host that it is not behind a NAT (as specified in Section 2.23 of <xref target="RFC7296" />) <bcp14>MUST</bcp14> be done
+        separately for IKE and ESP. In particular, if such a host receives new ESP packet 
+        whose integrity protection validates and sourse IP address and port are 
+        different from the current saved ones for the ESP SA, it updates them only for 
+        this ESP SA and all other ESP SAs created by the same IKE SA as this ESP SA,
+        but it <bcp14>MUST NOT</bcp14> update peer IP address and port used by this IKE SA. 
+        Alternatively, if the host receives protected IKE message with new 
+        sourse IP address and port it updates them only for this IKE SA and
+        <bcp14>MUST NOT</bcp14> update them for any ESP SA created by this IKE SA.
+        </t>
       </section>
 
       <section anchor="udp-reach" title="UDP Reachability Verification">
@@ -349,8 +361,7 @@ N(SEPARATE_TRANSPORTS)  --->
             preference to ESP sent directly over IP while avoiding excessive
             delay if it is not reachable.</t>
           </list>One way to perform this verification is to use an ESP Echo
-        Request <xref
-        target="I-D.ietf-ipsecme-encrypted-esp-ping"></xref>.</t>
+        Request <xref target="I-D.ietf-ipsecme-encrypted-esp-ping" />.</t>
       </section>
     </section>
 
@@ -372,6 +383,22 @@ N(SEPARATE_TRANSPORTS)  --->
         reachability verification as described in <xref target="udp-reach" />
         on the new path. If ESP reachability is confirmed, the ESP SA switches
         from TCP to the verified path.</t>
+
+        <t> When separate transports are in use and there is a NAT in between, 
+        MAT mappings for IKE and ESP transports are maintained separately
+        (as pointed out in <xref target="nat" />). This means that after
+        switching to new IP addresses by means of MOBIKE (using the UPDATE_SA_ADDRESSES notification) 
+        the new NAT mapping becomes known only for IKE SA and not for ESP SA(s).
+        In this situation, if UDP transport is still available on a new network path, the host that it is not behind a NAT 
+        <bcp14>MUST</bcp14> use the information from the verified incoming ESP packets to update
+        peer's IP address and port for ESP, as defined in <xref target="nat" /> (and
+        also permitted by MOBIKE, see Section 3.8 of <xref target="RFC4555" />).
+        </t>
+
+        <aside>
+          <t>Note that this requires the presence on incoming traffic to this host that may not always be the case.
+          In such situations an ESP Echo Request <xref target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be used.</t>
+        </aside>
       </section>
 
       <section anchor="resume" title="Interaction with IKE Session Resumption">
