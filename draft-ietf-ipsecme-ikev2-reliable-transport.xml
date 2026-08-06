@@ -389,7 +389,7 @@ N(SEPARATE_TRANSPORTS)  --->
         (as pointed out in <xref target="nat" />). This means that after
         switching to new IP addresses by means of MOBIKE (using the UPDATE_SA_ADDRESSES notification) 
         the new NAT mapping becomes known only for IKE SA and not for ESP SA(s).
-        In this situation, if UDP transport is still available on a new network path, the host that it is not behind a NAT 
+        In this situation, if UDP transport is still available on a new network path, the host that is not behind a NAT
         <bcp14>MUST</bcp14> use the information from the verified incoming ESP packets to update
         peer's IP address and port for ESP, as defined in <xref target="nat" /> (and
         also permitted by MOBIKE, see Section 3.8 of <xref target="RFC4555" />).
