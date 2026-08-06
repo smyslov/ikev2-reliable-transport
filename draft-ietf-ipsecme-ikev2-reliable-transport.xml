@@ -396,7 +396,7 @@ N(SEPARATE_TRANSPORTS)  --->
         </t>
 
         <aside>
-          <t>Note that this requires the presence on incoming traffic to this host that may not always be the case.
+          <t>Note that this requires the presence of incoming traffic to this host that may not always be the case.
           In such situations an ESP Echo Request <xref target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be used.</t>
         </aside>
       </section>
