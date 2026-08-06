@@ -322,7 +322,7 @@ N(SEPARATE_TRANSPORTS)  --->
         this ESP SA and all other ESP SAs created by the same IKE SA as this ESP SA,
         but it <bcp14>MUST NOT</bcp14> update peer IP address and port used by this IKE SA. 
         Alternatively, if the host receives protected IKE message with new 
-        sourse IP address and port it updates them only for this IKE SA and
+        source IP address and port it updates them only for this IKE SA and
         <bcp14>MUST NOT</bcp14> update them for any ESP SA created by this IKE SA.
         </t>
       </section>
