@@ -314,7 +314,7 @@ N(SEPARATE_TRANSPORTS)  --->
         UDP path. 
         </t>
 
-        <t> In addtition, dynamic update of peer IP address and port 
+        <t> In addition, dynamic update of peer IP address and port 
         by the host that it is not behind a NAT (as specified in Section 2.23 of <xref target="RFC7296" />) <bcp14>MUST</bcp14> be done
         separately for IKE and ESP. In particular, if such a host receives new ESP packet 
         whose integrity protection validates and sourse IP address and port are 
