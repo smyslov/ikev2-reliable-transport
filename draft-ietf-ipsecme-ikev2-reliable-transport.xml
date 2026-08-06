@@ -317,7 +317,7 @@ N(SEPARATE_TRANSPORTS)  --->
         <t> In addition, dynamic update of peer IP address and port 
         by the host that it is not behind a NAT (as specified in Section 2.23 of <xref target="RFC7296" />) <bcp14>MUST</bcp14> be done
         separately for IKE and ESP. In particular, if such a host receives new ESP packet 
-        whose integrity protection validates and sourse IP address and port are 
+        whose integrity protection validates and source IP address and port are 
         different from the current saved ones for the ESP SA, it updates them only for 
         this ESP SA and all other ESP SAs created by the same IKE SA as this ESP SA,
         but it <bcp14>MUST NOT</bcp14> update peer IP address and port used by this IKE SA. 
