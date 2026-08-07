@@ -384,21 +384,16 @@ N(SEPARATE_TRANSPORTS)  --->
         on the new path. If ESP reachability is confirmed, the ESP SA switches
         from TCP to the verified path.</t>
 
-        <t> When separate transports are in use and there is a NAT in between, 
-        NAT mappings for IKE and ESP transports are maintained separately
-        (as pointed out in <xref target="nat" />). This means that after
-        switching to new IP addresses by means of MOBIKE (using the UPDATE_SA_ADDRESSES notification) 
-        the new NAT mapping becomes known only for IKE SA and not for ESP SA(s).
-        In this situation, if UDP transport is still available on a new network path, the host that is not behind a NAT
-        <bcp14>MUST</bcp14> use the information from the verified incoming ESP packets to update
-        peer's IP address and port for ESP, as defined in <xref target="nat" /> (and
-        also permitted by MOBIKE, see Section 3.8 of <xref target="RFC4555" />).
+        <t> When separate transports are in use and there is a NAT between the peers, 
+        NAT mappings for IKE and ESP are maintained separately. After switching to new IP addresses via MOBIKE 
+        (using the UPDATE_SA_ADDRESSES notification), the new NAT mapping becomes known only for the IKE SA 
+        and not for the ESP SA(s). If UDP transport is still available on a new network path, the peer that is not behind a NAT 
+        <bcp14>MUST</bcp14> use the procedure defined in <xref target="nat" /> for IP and port updating for ESP SA(s)
+        (note that this is permitted by MOBIKE, see Section 3.8 of <xref target="RFC4555" />). 
+        If no incoming ESP traffic is available to trigger this update, an ESP Echo Request 
+        <xref target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be used. 
+        The peer that is behind a NAT <bcp14>MUST NOT</bcp14> update the IP address and port of its peer for ESP SA(s).
         </t>
-
-        <aside>
-          <t>Note that this requires the presence of incoming traffic to this host that may not always be the case.
-          In such situations an ESP Echo Request <xref target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be used.</t>
-        </aside>
       </section>
 
       <section anchor="resume" title="Interaction with IKE Session Resumption">
