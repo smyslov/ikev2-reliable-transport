@@ -287,8 +287,9 @@ N(SEPARATE_TRANSPORTS)  --->
         <bcp14>MAY</bcp14> switch ESP to use TCP transport as specified in
         <xref target="RFC9329" />. If ESP is transported over a different
         protocol than IKE, intermediate devices might apply different
-        filtering rules. To detect possible connectivity issues with ESP
-        traffic, the encrypted ESP ping mechanism defined in <xref
+        filtering rules. In the case of bi-directional traffic, implementations can rely
+        on the presence of incoming ESP packets for detecting possible connectivity issues. 
+        Alternatively, the encrypted ESP ping mechanism defined in <xref
         target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be
         used.</t>
       </section>
@@ -321,9 +322,10 @@ N(SEPARATE_TRANSPORTS)  --->
         different from the current saved ones for the ESP SA, it updates them only for 
         this ESP SA and all other ESP SAs created by the same IKE SA as this ESP SA,
         but it <bcp14>MUST NOT</bcp14> update peer IP address and port used by this IKE SA. 
-        Alternatively, if the host receives protected IKE message with new 
-        source IP address and port it updates them only for this IKE SA and
-        <bcp14>MUST NOT</bcp14> update them for any ESP SA created by this IKE SA.
+        Alternatively, if the host receives protected IKE message 
+        on a new TCP connection (with different source IP address and/or port) it 
+        uses this TCP connebtion only for the IKE SA and
+        <bcp14>MUST NOT</bcp14> change source IP and port for any ESP SA created by this IKE SA.
         </t>
       </section>
 
