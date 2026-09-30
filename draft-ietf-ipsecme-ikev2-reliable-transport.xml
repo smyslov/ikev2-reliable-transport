@@ -322,8 +322,8 @@ N(SEPARATE_TRANSPORTS)  --->
         different from the current saved ones for the ESP SA, it updates them only for 
         this ESP SA and all other ESP SAs created by the same IKE SA as this ESP SA,
         but it <bcp14>MUST NOT</bcp14> update peer IP address and port used by this IKE SA. 
-        Alternatively, if the host receives protected IKE message 
-        on a new TCP connection (with different source IP address and/or port) it 
+        Alternatively, if the host receives a protected IKE message 
+        on a new TCP connection (with different source IP address and/or port), it 
         uses this TCP connection only for the IKE SA and
         <bcp14>MUST NOT</bcp14> change source IP and port for any ESP SA created by this IKE SA.
         </t>
