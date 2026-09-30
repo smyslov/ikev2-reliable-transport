@@ -287,11 +287,11 @@ N(SEPARATE_TRANSPORTS)  --->
         <bcp14>MAY</bcp14> switch ESP to use TCP transport as specified in
         <xref target="RFC9329" />. If ESP is transported over a different
         protocol than IKE, intermediate devices might apply different
-        filtering rules. In the case of bi-directional traffic, implementations can rely
-        on the presence of incoming ESP packets for detecting possible connectivity issues. 
+        filtering rules. If traffic is bidirectional, the absence of incoming 
+        ESP packets indicates a possible connectivity issue with ESP.  
         Alternatively, the encrypted ESP ping mechanism defined in <xref
         target="I-D.ietf-ipsecme-encrypted-esp-ping" /> <bcp14>MAY</bcp14> be
-        used.</t>
+        used to check ESP connectivity.</t>
       </section>
 
       <section anchor="nat" title="NAT Considerations">
